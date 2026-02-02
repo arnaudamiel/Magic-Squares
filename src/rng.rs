@@ -31,6 +31,12 @@ impl Lcg {
         }
     }
 
+    /// Creates a new LCG with a specific seed for thread-local RNG instances.
+    /// This allows each thread to have its own independent random number generator.
+    pub fn new_with_seed(seed: u64) -> Self {
+        Self { state: seed }
+    }
+
     /// Generates the next random `u32`.
     /// Uses constants from Knuth's MMIX implementation.
     /// $a = 6364136223846793005$

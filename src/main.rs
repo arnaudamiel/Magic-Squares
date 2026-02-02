@@ -58,33 +58,73 @@ fn main() {
         }
 
     } else {
-        // Verification Mode (Orders 1 to 100)
-        println!("Running Verification for Orders 1 to 100 (100 samples each)...");
+        // Parallel Verification Mode (Orders 1 to 100)
+        use std::thread;
+        use std::sync::mpsc;
         
-        for n in 1..=100 {
-            if n == 2 {
-                println!("Order 2: Impossible (Skipping)");
-                continue;
-            }
-
-            let mut unique_squares = HashSet::new();
-            let mut all_valid = true;
-
-            for _ in 0..100 {
-                let mut magic_gen = get_generator(n, &mut lcg);
-                let sq = magic_gen.generate(n);
+        println!("Running Parallel Verification for Orders 1 to 100 (100 samples each)...");
+        
+        // Determine number of worker threads
+        let num_threads = thread::available_parallelism()
+            .map(|n| n.get())
+            .unwrap_or(4);
+        
+        println!("Using {} worker threads", num_threads);
+        
+        // Collect all orders to process (excluding n=2)
+        let orders: Vec<usize> = (1..=100).filter(|&n| n != 2).collect();
+        let chunk_size = (orders.len() + num_threads - 1) / num_threads;
+        
+        let (tx, rx) = mpsc::channel();
+        
+        // Spawn worker threads
+        let handles: Vec<_> = orders
+            .chunks(chunk_size)
+            .enumerate()
+            .map(|(thread_id, chunk)| {
+                let chunk = chunk.to_vec();
+                let tx = tx.clone();
                 
-                if !validator::check_magic_properties(&sq, n) {
-                    all_valid = false;
-                    println!("Order {}: INVALID SQUARE GENERATED!", n);
-                    break;
-                }
-                
-                unique_squares.insert(sq);
-            }
-
-            if all_valid {
-                println!("Order {}: 100/100 Valid. Unique Variations: {}", n, unique_squares.len());
+                thread::spawn(move || {
+                    for &n in &chunk {
+                        // Each thread gets its own RNG seeded with thread_id + n
+                        let mut lcg = Lcg::new_with_seed((thread_id * 1000 + n) as u64);
+                        let mut unique_squares = HashSet::new();
+                        let mut all_valid = true;
+                        
+                        for _ in 0..100 {
+                            let mut magic_gen = get_generator(n, &mut lcg);
+                            let sq = magic_gen.generate(n);
+                            
+                            if !validator::check_magic_properties(&sq, n) {
+                                all_valid = false;
+                                break;
+                            }
+                            unique_squares.insert(sq);
+                        }
+                        
+                        tx.send((n, all_valid, unique_squares.len())).unwrap();
+                    }
+                })
+            })
+            .collect();
+        
+        // Close the sender so receiver knows when to stop
+        drop(tx);
+        
+        // Collect results from all threads
+        let mut results: Vec<_> = rx.iter().collect();
+        results.sort_by_key(|&(n, _, _)| n);
+        
+        // Wait for all threads to complete
+        for handle in handles {
+            handle.join().unwrap();
+        }
+        
+        // Print results in order
+        for (n, valid, unique_count) in results {
+            if valid {
+                println!("Order {}: 100/100 Valid. Unique Variations: {}", n, unique_count);
             } else {
                 println!("Order {}: FAILED VALIDATION", n);
             }
