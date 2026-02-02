@@ -14,9 +14,7 @@ A high-performance Magic Square generator built with Rust and WebAssembly (WASM)
 
 ## 🚀 Live Demo
 
-[Link to GitHub Pages Demo](https://[YOUR_GITHUB_USERNAME].github.io/[REPO_NAME]/index.html)
-
-*(Note: Replace with your actual GitHub Pages URL after deployment)*
+[View the Live Demo on GitHub Pages](https://arnaudamiel.github.io/Magic-Squares/)
 
 ## 🛠️ Build & Run
 
