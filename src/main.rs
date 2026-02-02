@@ -49,9 +49,9 @@ fn main() {
         }
         let mut magic_gen = get_generator(target_n, &mut lcg);
         let sq = magic_gen.generate(target_n);
-        print_square(&sq);
+        print_square(&sq, target_n);
         
-        if validator::check_magic_properties(&sq) {
+        if validator::check_magic_properties(&sq, target_n) {
             println!("\nVerified: This is a valid magic square.");
         } else {
             println!("\nError: The generated square is invalid!");
@@ -74,7 +74,7 @@ fn main() {
                 let mut magic_gen = get_generator(n, &mut lcg);
                 let sq = magic_gen.generate(n);
                 
-                if !validator::check_magic_properties(&sq) {
+                if !validator::check_magic_properties(&sq, n) {
                     all_valid = false;
                     println!("Order {}: INVALID SQUARE GENERATED!", n);
                     break;
@@ -92,14 +92,14 @@ fn main() {
     }
 }
 
-fn print_square(grid: &Vec<Vec<u32>>) {
+fn print_square(grid: &[u32], n: usize) {
     if grid.is_empty() { return; }
-    let n = grid.len();
     let max_val = n * n;
     let width = max_val.to_string().len() + 1; // +1 for spacing
 
-    for row in grid {
-        for val in row {
+    for r in 0..n {
+        for c in 0..n {
+            let val = grid[r * n + c];
             print!("{:width$}", val, width = width);
         }
         println!();

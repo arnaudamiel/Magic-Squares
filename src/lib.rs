@@ -89,13 +89,11 @@ pub fn generate_magic_square(n: usize) -> Result<MagicSquareResult, JsError> {
     };
 
     // Generate the square logic. (This could still panic on OOM, but our checks above minimize it)
-    let square = magic_gen.generate(n);
+    let square_vec = magic_gen.generate(n);
     
-    // Flatten the 2D vector into a 1D vector for easier passing to JS.
-    let flat_grid = square.into_iter().flatten().collect();
-
+    // The result is already a flat Vec<u32>, so no flattening needed!
     Ok(MagicSquareResult {
-        grid: flat_grid,
+        grid: square_vec,
         n,
     })
 }
@@ -104,17 +102,7 @@ pub fn generate_magic_square(n: usize) -> Result<MagicSquareResult, JsError> {
 /// This function is exported to allow client-side verification if needed.
 #[wasm_bindgen]
 pub fn verify_magic_square(n: usize, flat_grid: Vec<u32>) -> bool {
-    if flat_grid.len() != n * n {
-        return false;
-    }
-
-    // Reconstruct 2D grid from flat vector
-    let mut grid = Vec::with_capacity(n);
-    for chunk in flat_grid.chunks(n) {
-        grid.push(chunk.to_vec());
-    }
-
-    validator::check_magic_properties(&grid)
+    validator::check_magic_properties(&flat_grid, n)
 }
 
 #[cfg(test)]
