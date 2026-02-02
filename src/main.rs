@@ -17,6 +17,15 @@ fn get_generator<'a>(n: usize, rng: &'a mut Lcg) -> Box<dyn MagicGenerator + 'a>
     }
 }
 
+/// Main entry point for the Command Line Interface (CLI) version of the Magic Square Generator.
+/// 
+/// Usage:
+///     magic_squares.exe -n <ORDER>
+///
+/// Example:
+///     magic_squares.exe -n 7
+///
+/// If no arguments are provided, it runs a verification suite for orders 1-100.
 fn main() {
     let args: Vec<String> = env::args().collect();
     let mut target_n = 0;

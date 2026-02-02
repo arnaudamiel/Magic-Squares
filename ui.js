@@ -1,7 +1,11 @@
 import init, { generate_magic_square } from "./pkg/magic_squares.js";
 
+/**
+ * Main application entry point.
+ * Initializes the WASM module and sets up event listeners.
+ */
 async function run() {
-    // Initialize WASM
+    // Initialize the WASM module (fetches and compiles magic_squares_bg.wasm)
     await init();
 
     const orderInput = document.getElementById('order-n');
@@ -10,12 +14,17 @@ async function run() {
     const statsContainer = document.getElementById('stats');
     const magicConstantValue = document.getElementById('magic-constant');
 
+    // Limit the maximum order to prevent browser hanging.
     const MAX_ORDER = 100;
 
+    /**
+     * Event listener for the "Generate Square" button.
+     * Handles input validation, UI state calls, and invokes the WASM generator.
+     */
     generateBtn.addEventListener('click', async () => {
         const n = parseInt(orderInput.value);
 
-        // Validation
+        // --- Input Validation ---
         if (isNaN(n) || n < 1) {
             alert("Please enter a positive integer for the order.");
             return;
@@ -32,20 +41,25 @@ async function run() {
             }
         }
 
-        // UI State: Loading
+        // --- UI State: Loading ---
         generateBtn.disabled = true;
         generateBtn.innerText = "Generating...";
         gridContainer.innerHTML = '<p class="placeholder-text">Generating magic...</p>';
         statsContainer.classList.add('hidden');
 
-        // Wrap in setTimeout to allow UI to render the "Generating..." state
+        // Wrap in setTimeout to allow the browser to paint the "Generating" state
+        // before blocking the main thread with heavy WASM computation.
         setTimeout(() => {
             try {
+                // Call WASM function
                 const result = generate_magic_square(n);
-                
+
                 if (result) {
+                    // Render the result
                     renderGrid(result.grid, result.n);
-                    
+
+                    // Calculate Magic Constant: M = n * (n^2 + 1) / 2
+                    // Use BigInt to avoid overflow for large n.
                     const constant = (BigInt(result.n) * (BigInt(result.n) * BigInt(result.n) + 1n)) / 2n;
                     magicConstantValue.innerText = constant.toString();
                     statsContainer.classList.remove('hidden');
@@ -54,6 +68,8 @@ async function run() {
                 }
             } catch (error) {
                 console.error("Error generating square:", error);
+
+                // Handle WASM memory errors gracefully
                 if (error instanceof RangeError || error.message.includes("out of memory")) {
                     alert("Out of memory: The requested order is too large for the browser to handle.");
                     gridContainer.innerHTML = '<p class="error-text">Out of memory error.</p>';
@@ -62,22 +78,28 @@ async function run() {
                     gridContainer.innerHTML = '<p class="error-text">An error occurred.</p>';
                 }
             } finally {
+                // Restore UI State
                 generateBtn.disabled = false;
                 generateBtn.innerText = "Generate Square";
             }
         }, 50);
     });
 
+    /**
+     * Renders the flattened magic square grid into the DOM.
+     * @param {Uint32Array} flatGrid - The 1D array representing the square.
+     * @param {number} n - The order of the square.
+     */
     function renderGrid(flatGrid, n) {
         gridContainer.innerHTML = '';
         const grid = document.createElement('div');
         grid.className = 'magic-grid';
-        
-        // Calculate cell sizes
+
+        // Dynamic cell sizing logic to keep the grid readable
         const cellSize = n > 15 ? (n > 30 ? (n > 60 ? '20px' : '30px') : '40px') : '50px';
         const fontSize = n > 15 ? (n > 30 ? (n > 60 ? '0.5rem' : '0.7rem') : '0.9rem') : '1.1rem';
 
-        // Use the calculated cellSize for the grid layout to ensure consistency
+        // Use CSS Grid for layout
         grid.style.gridTemplateColumns = `repeat(${n}, ${cellSize})`;
         grid.style.gridTemplateRows = `repeat(${n}, ${cellSize})`;
 

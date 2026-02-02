@@ -1,10 +1,14 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
+/// A simple Linear Congruential Generator (LCG) for random number generation.
+/// We use this instead of the `rand` crate to minimize WASM bundle size.
+/// Formula: $X_{n+1} = (aX_n + c) \pmod m$
 pub struct Lcg {
     state: u64,
 }
 
 impl Lcg {
+    /// Creates a new LCG seeded with the current system time (nanoseconds).
     pub fn new() -> Self {
         let start = SystemTime::now();
         let since_the_epoch = start
@@ -14,12 +18,17 @@ impl Lcg {
         Self { state: seed }
     }
 
+    /// Generates the next random `u32`.
+    /// Uses constants from Knuth's MMIX implementation.
+    /// $a = 6364136223846793005$
+    /// $c = 1442695040888963407$
     pub fn next_u32(&mut self) -> u32 {
-        // LCG parameters (Knuth's MMIX)
         self.state = self.state.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        // Return the high 32 bits for better distribution quality
         (self.state >> 32) as u32
     }
 
+    /// Generates a random number in the range `[min, max)`.
     pub fn next_range(&mut self, min: usize, max: usize) -> usize {
         let range = max - min;
         if range == 0 {
@@ -29,8 +38,10 @@ impl Lcg {
         min + (val % range)
     }
 
+    /// Shuffles a mutable slice using the Fisher-Yates shuffle algorithm.
     pub fn shuffle<T>(&mut self, slice: &mut [T]) {
         for i in (1..slice.len()).rev() {
+            // Pick a random index from 0 to i
             let j = self.next_range(0, i + 1);
             slice.swap(i, j);
         }
