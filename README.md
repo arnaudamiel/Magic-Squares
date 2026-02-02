@@ -32,14 +32,22 @@ To build the project for the web:
     ```
     This will generate the necessary files in the `pkg/` directory.
 
-2.  **Run Locally**:
-    Start a local web server in the project root to serve `index.html`.
-    ```bash
-    python -m http.server 8000
-    ```
-    Open `http://localhost:8000` in your browser.
+### Running Locally with Python
 
-    > **Note**: You cannot open `index.html` directly (via `file://`) because modern browsers restrict loading WASM modules from the local file system for security reasons.
+Since modern browsers restrict loading WebAssembly from `file://` URIs, you **must** serve the files through a local web server.
+
+1.  **Ensure you have Python installed** (Python 3 is recommended).
+2.  **Open a terminal** in the project root directory.
+3.  **Start the server**:
+    ```bash
+    # For Python 3
+    python -m http.server 3000
+    ```
+4.  **Access the application**:
+    Open [http://localhost:3000](http://localhost:3000) in your web browser.
+
+> [!TIP]
+> You can use any port (e.g., 8080, 5000) by changing the number at the end of the command.
 
 ### CLI Application
 

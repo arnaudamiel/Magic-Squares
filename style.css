@@ -23,10 +23,8 @@ body {
     font-family: var(--font-main);
     line-height: 1.6;
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     padding: 2rem;
+    /* Remove centering from body to prevent cut-off */
 }
 
 .container {
@@ -38,6 +36,8 @@ body {
     padding: 3rem;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
+    /* Use margin: auto for safe centering of the main container */
+    margin: 2rem auto;
 }
 
 header {
@@ -163,14 +163,14 @@ input:focus {
 
 .grid-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
     min-height: 300px;
     background: rgba(15, 23, 42, 0.3);
     border-radius: 1rem;
     overflow: auto;
     padding: 2rem;
     border: 1px dashed var(--border-color);
+    position: relative;
 }
 
 .placeholder-text {
@@ -181,7 +181,10 @@ input:focus {
 .magic-grid {
     display: grid;
     gap: 0.5rem;
-    margin: 0 auto;
+    margin: auto;
+    /* Centers when small, but respects top-left when overflowing in most modern browsers */
+    min-width: min-content;
+    /* Ensure the grid doesn't collapse below its content size */
 }
 
 .grid-cell {
