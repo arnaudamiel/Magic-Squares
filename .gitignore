@@ -1,0 +1,5 @@
+/target
+/pkg/.gitignore
+**/*.rs.bk
+.DS_Store
+Thumbs.db
