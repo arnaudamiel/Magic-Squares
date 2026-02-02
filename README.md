@@ -10,7 +10,7 @@ A high-performance Magic Square generator built with Rust and WebAssembly (WASM)
     - **Singly Even Orders**: Implemented using the LUX method (Conway's method).
     - **Doubly Even Orders**: Implemented using the Truth-Grid method with random symmetries.
 - **Robust Validation**: Ensures generated squares are valid and handles edge cases (like $n=2$ which is impossible).
-- **Responsive Web UI**: A beautiful, dark-themed interface built with vanilla HTML/CSS/JS.
+- **Responsive Web UI**: An interface built with vanilla HTML/CSS/JS.
 
 ## 🚀 Live Demo
 
