@@ -1,0 +1,15 @@
+{
+  "name": "magic_squares",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "magic_squares_bg.wasm",
+    "magic_squares.js",
+    "magic_squares.d.ts"
+  ],
+  "main": "magic_squares.js",
+  "types": "magic_squares.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
