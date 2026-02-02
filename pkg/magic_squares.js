@@ -1,5 +1,9 @@
 /* @ts-self-types="./magic_squares.d.ts" */
 
+/**
+ * Represents the result of a magic square generation.
+ * This struct is exported to WASM, allowing Javascript to access the grid and its order.
+ */
 export class MagicSquareResult {
     static __wrap(ptr) {
         ptr = ptr >>> 0;
@@ -19,6 +23,8 @@ export class MagicSquareResult {
         wasm.__wbg_magicsquareresult_free(ptr, 0);
     }
     /**
+     * Returns a copy of the flattened grid to Javascript.
+     * Note: Cloning is necessary because we are passing ownership across the WASM boundary.
      * @returns {Uint32Array}
      */
     get grid() {
@@ -35,6 +41,7 @@ export class MagicSquareResult {
         }
     }
     /**
+     * Returns the order (n) of the square.
      * @returns {number}
      */
     get n() {
@@ -45,15 +52,37 @@ export class MagicSquareResult {
 if (Symbol.dispose) MagicSquareResult.prototype[Symbol.dispose] = MagicSquareResult.prototype.free;
 
 /**
+ * Main entry point for generating a magic square from Javascript.
+ *
+ * # Arguments
+ *
+ * * `n` - The order of the magic square to generate.
+ *
+ * # Returns
+ *
+ * * `Result<MagicSquareResult, JsError>` - The generated result, or an error if generation fails.
  * @param {number} n
- * @returns {MagicSquareResult | undefined}
+ * @returns {MagicSquareResult}
  */
 export function generate_magic_square(n) {
-    const ret = wasm.generate_magic_square(n);
-    return ret === 0 ? undefined : MagicSquareResult.__wrap(ret);
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        wasm.generate_magic_square(retptr, n);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+        if (r2) {
+            throw takeObject(r1);
+        }
+        return MagicSquareResult.__wrap(r0);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
 }
 
 /**
+ * Verifies if a given grid is a valid magic square.
+ * This function is exported to allow client-side verification if needed.
  * @param {number} n
  * @param {Uint32Array} flat_grid
  * @returns {boolean}
@@ -68,8 +97,16 @@ export function verify_magic_square(n, flat_grid) {
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,
+        __wbg_Error_8c4e43fe74559d73: function(arg0, arg1) {
+            const ret = Error(getStringFromWasm0(arg0, arg1));
+            return addHeapObject(ret);
+        },
         __wbg___wbindgen_throw_be289d5034ed271b: function(arg0, arg1) {
             throw new Error(getStringFromWasm0(arg0, arg1));
+        },
+        __wbg_now_a3af9a2f4bbaa4d1: function() {
+            const ret = Date.now();
+            return ret;
         },
     };
     return {
@@ -81,6 +118,21 @@ function __wbg_get_imports() {
 const MagicSquareResultFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_magicsquareresult_free(ptr >>> 0, 1));
+
+function addHeapObject(obj) {
+    if (heap_next === heap.length) heap.push(heap.length + 1);
+    const idx = heap_next;
+    heap_next = heap[idx];
+
+    heap[idx] = obj;
+    return idx;
+}
+
+function dropObject(idx) {
+    if (idx < 132) return;
+    heap[idx] = heap_next;
+    heap_next = idx;
+}
 
 function getArrayU32FromWasm0(ptr, len) {
     ptr = ptr >>> 0;
@@ -116,11 +168,24 @@ function getUint8ArrayMemory0() {
     return cachedUint8ArrayMemory0;
 }
 
+function getObject(idx) { return heap[idx]; }
+
+let heap = new Array(128).fill(undefined);
+heap.push(undefined, null, true, false);
+
+let heap_next = heap.length;
+
 function passArray32ToWasm0(arg, malloc) {
     const ptr = malloc(arg.length * 4, 4) >>> 0;
     getUint32ArrayMemory0().set(arg, ptr / 4);
     WASM_VECTOR_LEN = arg.length;
     return ptr;
+}
+
+function takeObject(idx) {
+    const ret = getObject(idx);
+    dropObject(idx);
+    return ret;
 }
 
 let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });

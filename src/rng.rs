@@ -8,14 +8,26 @@ pub struct Lcg {
 }
 
 impl Lcg {
-    /// Creates a new LCG seeded with the current system time (nanoseconds).
+
+    /// Creates a new LCG seeded with the current system time.
+    /// Uses `js_sys::Date::now()` on WASM and `std::time::SystemTime` natively.
     pub fn new() -> Self {
-        let start = SystemTime::now();
-        let since_the_epoch = start
-            .duration_since(UNIX_EPOCH)
-            .expect("Time went backwards");
-        let seed = since_the_epoch.as_nanos() as u64;
-        Self { state: seed }
+        #[cfg(target_arch = "wasm32")]
+        {
+            let now = js_sys::Date::now(); // Returns milliseconds as f64
+            let seed = now as u64;
+            Self { state: seed }
+        }
+
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let start = SystemTime::now();
+            let since_the_epoch = start
+                .duration_since(UNIX_EPOCH)
+                .expect("Time went backwards");
+            let seed = since_the_epoch.as_nanos() as u64;
+            Self { state: seed }
+        }
     }
 
     /// Generates the next random `u32`.

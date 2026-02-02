@@ -52,31 +52,35 @@ async function run() {
         setTimeout(() => {
             try {
                 // Call WASM function
+                // The Rust function now returns Result<MagicSquareResult, JsError>.
+                // In JS, this means it will either return the object or THROW an error.
                 const result = generate_magic_square(n);
 
-                if (result) {
-                    // Render the result
-                    renderGrid(result.grid, result.n);
+                // If we get here, generation was successful!
+                renderGrid(result.grid, result.n);
 
-                    // Calculate Magic Constant: M = n * (n^2 + 1) / 2
-                    // Use BigInt to avoid overflow for large n.
-                    const constant = (BigInt(result.n) * (BigInt(result.n) * BigInt(result.n) + 1n)) / 2n;
-                    magicConstantValue.innerText = constant.toString();
-                    statsContainer.classList.remove('hidden');
-                } else {
-                    gridContainer.innerHTML = '<p class="error-text">Failed to generate magic square.</p>';
-                }
+                // Calculate Magic Constant: M = n * (n^2 + 1) / 2
+                // Use BigInt to avoid overflow for large n.
+                const constant = (BigInt(result.n) * (BigInt(result.n) * BigInt(result.n) + 1n)) / 2n;
+                magicConstantValue.innerText = constant.toString();
+                statsContainer.classList.remove('hidden');
+
             } catch (error) {
                 console.error("Error generating square:", error);
 
-                // Handle WASM memory errors gracefully
-                if (error instanceof RangeError || error.message.includes("out of memory")) {
-                    alert("Out of memory: The requested order is too large for the browser to handle.");
-                    gridContainer.innerHTML = '<p class="error-text">Out of memory error.</p>';
-                } else {
-                    alert("An unexpected error occurred during generation.");
-                    gridContainer.innerHTML = '<p class="error-text">An error occurred.</p>';
+                // The error thrown from Rust will be a generic Error object with the message we constructed.
+                // We display that message directly to the user.
+                let errorMessage = "An unexpected error occurred.";
+
+                // Check if it's an error from our Rust code (which comes as an Error object/string)
+                if (typeof error === 'string') {
+                    errorMessage = error;
+                } else if (error.message) {
+                    errorMessage = error.message;
                 }
+
+                alert(`Generation Failed:\n${errorMessage}`);
+                gridContainer.innerHTML = `<p class="error-text">${errorMessage}</p>`;
             } finally {
                 // Restore UI State
                 generateBtn.disabled = false;
