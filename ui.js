@@ -17,6 +17,14 @@ async function run() {
     // Limit the maximum order to prevent browser hanging.
     const MAX_ORDER = 100;
 
+    // --- Keyboard Accessibility ---
+    orderInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent accidental form submission if wrapped in one
+            generateBtn.click();
+        }
+    });
+
     /**
      * Event listener for the "Generate Square" button.
      * Handles input validation, UI state calls, and invokes the WASM generator.

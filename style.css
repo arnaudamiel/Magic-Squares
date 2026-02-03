@@ -57,6 +57,7 @@ h1 {
     color: var(--accent-color);
     background: linear-gradient(to right, #38bdf8, #818cf8);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
