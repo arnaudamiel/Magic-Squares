@@ -37,12 +37,15 @@ impl Lcg {
         Self { state: seed }
     }
 
+    /// Multiplier (a) from Knuth's MMIX implementation.
+    const MMIX_A: u64 = 6364136223846793005;
+    /// Increment (c) from Knuth's MMIX implementation.
+    const MMIX_C: u64 = 1442695040888963407;
+
     /// Generates the next random `u32`.
     /// Uses constants from Knuth's MMIX implementation.
-    /// $a = 6364136223846793005$
-    /// $c = 1442695040888963407$
     pub fn next_u32(&mut self) -> u32 {
-        self.state = self.state.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        self.state = self.state.wrapping_mul(Self::MMIX_A).wrapping_add(Self::MMIX_C);
         // Return the high 32 bits for better distribution quality
         (self.state >> 32) as u32
     }

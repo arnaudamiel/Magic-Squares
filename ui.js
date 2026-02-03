@@ -99,11 +99,37 @@ async function run() {
         const grid = document.createElement('div');
         grid.className = 'magic-grid';
 
-        // Dynamic cell sizing logic to keep the grid readable
-        const cellSize = n > 15 ? (n > 30 ? (n > 60 ? '20px' : '30px') : '40px') : '50px';
-        const fontSize = n > 15 ? (n > 30 ? (n > 60 ? '0.5rem' : '0.7rem') : '0.9rem') : '1.1rem';
+        // The largest number in an n×n magic square is n²
+        const maxNumber = n * n;
+        const digitCount = maxNumber.toString().length;
 
-        // Use CSS Grid for layout
+        // Calculate cell size based on digit count to fit the largest number
+        // Base sizes adjusted for digit count
+        let cellSize, fontSize;
+
+        if (digitCount <= 2) {
+            // Numbers up to 99 (n ≤ 9)
+            cellSize = '50px';
+            fontSize = '1.1rem';
+        } else if (digitCount === 3) {
+            // Numbers up to 999 (n ≤ 31)
+            cellSize = n > 20 ? '45px' : '50px';
+            fontSize = n > 20 ? '1rem' : '1.1rem';
+        } else if (digitCount === 4) {
+            // Numbers up to 9999 (n ≤ 99)
+            cellSize = n > 70 ? '38px' : (n > 50 ? '40px' : '45px');
+            fontSize = n > 70 ? '0.75rem' : (n > 50 ? '0.85rem' : '0.95rem');
+        } else if (digitCount === 5) {
+            // Numbers up to 99999 (n ≤ 316)
+            cellSize = '40px';
+            fontSize = '0.65rem';
+        } else {
+            // 6+ digits
+            cellSize = '45px';
+            fontSize = '0.5rem';
+        }
+
+        // Use CSS Grid for layout - all cells same size
         grid.style.gridTemplateColumns = `repeat(${n}, ${cellSize})`;
         grid.style.gridTemplateRows = `repeat(${n}, ${cellSize})`;
 
@@ -111,6 +137,7 @@ async function run() {
             const cell = document.createElement('div');
             cell.className = 'grid-cell';
             cell.innerText = val;
+            // All cells get the same size
             cell.style.width = cellSize;
             cell.style.height = cellSize;
             cell.style.fontSize = fontSize;
@@ -119,6 +146,19 @@ async function run() {
 
         gridContainer.appendChild(grid);
     }
+}
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then((registration) => {
+                console.log('Service Worker registered successfully:', registration.scope);
+            })
+            .catch((error) => {
+                console.log('Service Worker registration failed:', error);
+            });
+    });
 }
 
 run();

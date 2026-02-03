@@ -5,12 +5,35 @@ A high-performance Magic Square generator built with Rust and WebAssembly (WASM)
 ## 🌟 Features
 
 - **Blazing Fast Generation**: Powered by Rust's performance and WASM for near-native speed in the browser.
+- **Progressive Web App**: Installable on desktop and mobile devices with full offline support.
 - **Support for All Orders**:
     - **Odd Orders**: Implemented using the Siamese (De La Loubere) method optimizations.
     - **Singly Even Orders**: Implemented using the LUX method (Conway's method).
     - **Doubly Even Orders**: Implemented using the Truth-Grid method with random symmetries.
 - **Robust Validation**: Ensures generated squares are valid and handles edge cases (like $n=2$ which is impossible).
-- **Responsive Web UI**: An interface built with vanilla HTML/CSS/JS.
+- **Responsive Web UI**: An interface built with vanilla HTML/CSS/JS that works perfectly on mobile and desktop.
+
+## 📱 Progressive Web App
+
+This application is a **Progressive Web App (PWA)**, which means you can:
+
+- **Install it on your device**: Add it to your home screen on mobile or desktop for a native app-like experience
+- **Use it offline**: Once loaded, the app works completely offline - generate magic squares anywhere, anytime
+- **Fast loading**: Assets are cached for instant loading on subsequent visits
+- **Automatic updates**: The app updates automatically in the background when new versions are available
+
+### How to Install
+
+**On Desktop (Chrome/Edge):**
+1. Visit the [Live Demo](https://arnaudamiel.github.io/Magic-Squares/)
+2. Look for the install icon (⊕) in the address bar
+3. Click "Install" to add the app to your applications
+
+**On Mobile (Android/iOS):**
+1. Visit the [Live Demo](https://arnaudamiel.github.io/Magic-Squares/)
+2. Tap the browser menu (⋮ or share icon)
+3. Select "Add to Home Screen" or "Install App"
+4. The app will appear on your home screen like a native app
 
 ## 🚀 Live Demo
 
@@ -82,9 +105,12 @@ The generator automatically selects the best algorithm based on the order $n$:
 │   ├── validator.rs  # Magic square property validation
 │   └── rng.rs        # Custom Linear Congruential Generator (LCG)
 ├── pkg/              # Compiled WebAssembly artifacts
+├── icons/            # PWA app icons
 ├── index.html        # Main web interface
 ├── style.css         # Application styling
-└── ui.js             # Frontend logic & WASM bridge
+├── ui.js             # Frontend logic & WASM bridge
+├── manifest.json     # PWA manifest
+└── sw.js             # Service Worker for offline support
 ```
 
 ## 📄 License
