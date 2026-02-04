@@ -53,7 +53,9 @@ To build the project for the web:
     ```bash
     wasm-pack build --target web
     ```
-    This will generate the necessary files in the `pkg/` directory.
+
+> [!TIP]
+> This generates the `pkg/` directory. Only the core `.wasm` and `.js` files are tracked in Git to keep the repository focused on what's necessary for the PWA.
 
 ### Running Locally with Python
 
@@ -98,19 +100,19 @@ The generator automatically selects the best algorithm based on the order $n$:
 ## 📁 Project Structure
 
 ```
-├── src/
+├── src/              # Source code
 │   ├── lib.rs        # WASM bindings verification logic
 │   ├── main.rs       # CLI entry point
-│   ├── generator.rs  # Core generation algorithms (Odd, Singly Even, Doubly Even)
+│   ├── generator.rs  # Core generation algorithms
 │   ├── validator.rs  # Magic square property validation
-│   └── rng.rs        # Custom Linear Congruential Generator (LCG)
-├── pkg/              # Compiled WebAssembly artifacts
+│   └── rng.rs        # Custom LCG
+├── pkg/              # Compiled WebAssembly artifacts (REQUIRED for web/PWA)
 ├── icons/            # PWA app icons
 ├── index.html        # Main web interface
 ├── style.css         # Application styling
 ├── ui.js             # Frontend logic & WASM bridge
 ├── manifest.json     # PWA manifest
-└── sw.js             # Service Worker for offline support
+└── sw.js             # Service Worker
 ```
 
 ## 📄 License

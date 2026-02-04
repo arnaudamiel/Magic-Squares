@@ -1,5 +1,26 @@
+# Rust / Cargo
 /target
-/pkg/.gitignore
+Cargo.lock
 **/*.rs.bk
+
+# WASM (wasm-pack)
+# Ignore all by default in pkg, then unignore essential PWA files
+/pkg/*
+!/pkg/magic_squares.js
+!/pkg/magic_squares_bg.wasm
+!/pkg/.gitignore
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Specific
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.log
