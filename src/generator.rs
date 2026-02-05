@@ -3,9 +3,20 @@ use crate::rng::Lcg;
 /// Trait defining the interface for a Magic Square Generator.
 /// Implementations of this trait handle specific cases based on the order $n$.
 pub trait MagicGenerator {
-    /// Generates a magic square of order $n$.
+/// Generates a magic square of order $n$.
     /// Returns a flat vector of size n*n for better performance and easier WASM mapping.
     fn generate(&mut self, n: usize) -> Vec<u32>;
+}
+
+/// Factory function to create the appropriate generator based on the order n.
+pub fn create<'a>(n: usize, rng: &'a mut Lcg) -> Box<dyn MagicGenerator + 'a> {
+    if n % 2 != 0 {
+        Box::new(OddGenerator::new(rng))
+    } else if n % 4 != 0 {
+        Box::new(SinglyEvenGenerator::new(rng))
+    } else {
+        Box::new(DoublyEvenGenerator::new(rng))
+    }
 }
 
 /// Generator for Odd order magic squares ($n % 2 != 0$).

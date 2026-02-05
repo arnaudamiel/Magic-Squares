@@ -1,10 +1,10 @@
-mod rng;
-mod generator;
-mod validator;
+pub mod rng;
+pub mod generator;
+pub mod validator;
 
 use wasm_bindgen::prelude::*;
 use rng::Lcg;
-use generator::{MagicGenerator, OddGenerator, SinglyEvenGenerator, DoublyEvenGenerator};
+
 
 /// Represents the result of a magic square generation.
 /// This struct is exported to WASM, allowing Javascript to access the grid and its order.
@@ -80,13 +80,7 @@ pub fn generate_magic_square(n: usize) -> Result<MagicSquareResult, JsError> {
     let mut lcg = Lcg::new();
     
     // Select the appropriate generator based on the order n.
-    let mut magic_gen: Box<dyn MagicGenerator> = if n % 2 != 0 {
-        Box::new(OddGenerator::new(&mut lcg))
-    } else if n % 4 != 0 {
-        Box::new(SinglyEvenGenerator::new(&mut lcg))
-    } else {
-        Box::new(DoublyEvenGenerator::new(&mut lcg))
-    };
+    let mut magic_gen = generator::create(n, &mut lcg);
 
     // Generate the square logic. (This could still panic on OOM, but our checks above minimize it)
     let square_vec = magic_gen.generate(n);

@@ -1,21 +1,10 @@
-mod rng;
-mod generator;
-mod validator;
-
-use rng::Lcg;
-use generator::{MagicGenerator, OddGenerator, SinglyEvenGenerator, DoublyEvenGenerator};
+use magic_squares::rng::Lcg;
+use magic_squares::generator;
+use magic_squares::validator;
 use std::env;
 use std::collections::HashSet;
 
-fn get_generator<'a>(n: usize, rng: &'a mut Lcg) -> Box<dyn MagicGenerator + 'a> {
-    if n % 2 != 0 {
-        Box::new(OddGenerator::new(rng))
-    } else if n % 4 != 0 {
-        Box::new(SinglyEvenGenerator::new(rng))
-    } else {
-        Box::new(DoublyEvenGenerator::new(rng))
-    }
-}
+
 
 /// Main entry point for the Command Line Interface (CLI) version of the Magic Square Generator.
 /// 
@@ -47,7 +36,7 @@ fn main() {
              println!("Order 2 Magic Square is impossible.");
              return;
         }
-        let mut magic_gen = get_generator(target_n, &mut lcg);
+        let mut magic_gen = generator::create(target_n, &mut lcg);
         let sq = magic_gen.generate(target_n);
         print_square(&sq, target_n);
         
@@ -93,7 +82,7 @@ fn main() {
                         let mut all_valid = true;
                         
                         for _ in 0..100 {
-                            let mut magic_gen = get_generator(n, &mut lcg);
+                            let mut magic_gen = generator::create(n, &mut lcg);
                             let sq = magic_gen.generate(n);
                             
                             if !validator::check_magic_properties(&sq, n) {
