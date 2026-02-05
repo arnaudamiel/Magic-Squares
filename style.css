@@ -276,7 +276,8 @@ footer {
     }
 
     .input-group {
-        width: 100%;
+        width: auto;
+        min-width: 6rem;
     }
 
     /* Ensure input and button have proper sizing */
@@ -287,10 +288,13 @@ footer {
     }
 
     .btn-primary {
-        width: 100%;
-        padding: 0.875rem 1.5rem;
+        width: auto;
+        padding: 0.875rem 1rem;
         font-size: 1rem;
         height: auto;
+        flex: 0 1 auto;
+        white-space: normal;
+        line-height: 1.2;
     }
 
     footer {
