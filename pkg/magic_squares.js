@@ -23,22 +23,20 @@ export class MagicSquareResult {
         wasm.__wbg_magicsquareresult_free(ptr, 0);
     }
     /**
-     * Returns a copy of the flattened grid to Javascript.
-     * Note: Cloning is necessary because we are passing ownership across the WASM boundary.
-     * @returns {Uint32Array}
+     * Returns the number of elements in the grid.
+     * @returns {number}
      */
-    get grid() {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.magicsquareresult_grid(retptr, this.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var v1 = getArrayU32FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_export(r0, r1 * 4, 4);
-            return v1;
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
-        }
+    get_grid_len() {
+        const ret = wasm.magicsquareresult_get_grid_len(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * Returns a raw pointer to the grid buffer.
+     * @returns {number}
+     */
+    get_grid_ptr() {
+        const ret = wasm.magicsquareresult_get_grid_ptr(this.__wbg_ptr);
+        return ret >>> 0;
     }
     /**
      * Returns the order (n) of the square.
@@ -88,7 +86,7 @@ export function generate_magic_square(n) {
  * @returns {boolean}
  */
 export function verify_magic_square(n, flat_grid) {
-    const ptr0 = passArray32ToWasm0(flat_grid, wasm.__wbindgen_export2);
+    const ptr0 = passArray32ToWasm0(flat_grid, wasm.__wbindgen_export);
     const len0 = WASM_VECTOR_LEN;
     const ret = wasm.verify_magic_square(n, ptr0, len0);
     return ret !== 0;
@@ -132,11 +130,6 @@ function dropObject(idx) {
     if (idx < 132) return;
     heap[idx] = heap_next;
     heap_next = idx;
-}
-
-function getArrayU32FromWasm0(ptr, len) {
-    ptr = ptr >>> 0;
-    return getUint32ArrayMemory0().subarray(ptr / 4, ptr / 4 + len);
 }
 
 let cachedDataViewMemory0 = null;

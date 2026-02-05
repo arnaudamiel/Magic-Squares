@@ -18,11 +18,16 @@ pub struct MagicSquareResult {
 
 #[wasm_bindgen]
 impl MagicSquareResult {
-    /// Returns a copy of the flattened grid to Javascript.
-    /// Note: Cloning is necessary because we are passing ownership across the WASM boundary.
-    #[wasm_bindgen(getter)]
-    pub fn grid(&self) -> Vec<u32> {
-        self.grid.clone()
+    /// Returns a raw pointer to the grid buffer.
+    #[wasm_bindgen]
+    pub fn get_grid_ptr(&self) -> *const u32 {
+        self.grid.as_ptr()
+    }
+
+    /// Returns the number of elements in the grid.
+    #[wasm_bindgen]
+    pub fn get_grid_len(&self) -> usize {
+        self.grid.len()
     }
 
     /// Returns the order (n) of the square.

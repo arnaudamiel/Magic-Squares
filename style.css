@@ -67,14 +67,17 @@ header p {
 }
 
 .controls {
-    display: flex;
-    gap: 1.5rem;
-    align-items: flex-end;
     margin-bottom: 3rem;
     background: rgba(15, 23, 42, 0.5);
     padding: 2rem;
     border-radius: 1rem;
     border: 1px solid var(--border-color);
+}
+
+.controls-form {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-end;
 }
 
 .input-group {
@@ -163,13 +166,13 @@ input:focus {
 }
 
 .grid-container {
-    display: flex;
-    flex-direction: column;
+    display: block;
+    /* Changed from flex to block for reliable scrolling */
     min-height: 300px;
     background: rgba(15, 23, 42, 0.3);
     border-radius: 1rem;
     overflow: auto;
-    padding: 2rem;
+    /* Removed padding to ensure canvas fits perfectly */
     border: 1px dashed var(--border-color);
     position: relative;
 }
@@ -177,15 +180,25 @@ input:focus {
 .placeholder-text {
     color: var(--text-secondary);
     font-style: italic;
+    padding: 2rem;
+    /* Restore padding for text only */
+    text-align: center;
 }
 
+/* Canvas Styling for Virtual Scrolling */
+.magic-canvas {
+    display: block;
+    /* Removes bottom spacing/scrollbar issues */
+    /* No border on canvas itself, handled by drawing */
+}
+
+/* Obsolete Grid Styles (Kept for reference but unused) */
+/*
 .magic-grid {
     display: grid;
     gap: 0.5rem;
     margin: auto;
-    /* Centers when small, but respects top-left when overflowing in most modern browsers */
     min-width: min-content;
-    /* Ensure the grid doesn't collapse below its content size */
 }
 
 .grid-cell {
@@ -206,6 +219,7 @@ input:focus {
     background: var(--border-color);
     border-color: var(--accent-color);
 }
+*/
 
 footer {
     margin-top: 3rem;

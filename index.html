@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magic Square Generator - WASM Edition</title>
-    
+
     <!-- PWA Meta Tags -->
     <meta name="description" content="Generate perfectly balanced magic squares using optimized WebAssembly">
     <meta name="theme-color" content="#38bdf8">
@@ -13,12 +14,14 @@
     <meta name="apple-mobile-web-app-title" content="Magic Square">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
-    
+
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -28,11 +31,14 @@
 
         <main>
             <section class="controls">
-                <div class="input-group">
-                    <label for="order-n">Order (n)</label>
-                    <input type="number" id="order-n" min="1" max="50" value="3" placeholder="Enter n..." inputmode="numeric" pattern="[0-9]*">
-                </div>
-                <button id="generate-btn" class="btn-primary">Generate Square</button>
+                <form id="magic-form" class="controls-form">
+                    <div class="input-group">
+                        <label for="order-n">Order (n)</label>
+                        <input type="number" id="order-n" min="1" value="3" placeholder="Enter n..." inputmode="numeric"
+                            pattern="[0-9]*">
+                    </div>
+                    <button type="submit" id="generate-btn" class="btn-primary">Generate Square</button>
+                </form>
             </section>
 
             <section class="result-area">
@@ -55,4 +61,5 @@
 
     <script type="module" src="ui.js"></script>
 </body>
+
 </html>

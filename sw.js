@@ -1,5 +1,5 @@
 // Service Worker for Magic Square Generator PWA
-const CACHE_NAME = 'magic-square-v1.03';
+const CACHE_NAME = 'magic-square-v1.04';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
