@@ -1,5 +1,6 @@
 pub mod rng;
 pub mod generator;
+#[cfg(not(target_arch = "wasm32"))]
 pub mod validator;
 
 use wasm_bindgen::prelude::*;
@@ -98,7 +99,9 @@ pub fn generate_magic_square(n: usize) -> Result<MagicSquareResult, JsError> {
 }
 
 /// Verifies if a given grid is a valid magic square.
-/// This function is exported to allow client-side verification if needed.
+/// This function is NOT exported to WASM to save size, effectively removed from web build.
+/// It remains available for other targets (like tests or CLI if we were to expose it there).
+#[cfg(not(target_arch = "wasm32"))]
 #[wasm_bindgen]
 pub fn verify_magic_square(n: usize, flat_grid: Vec<u32>) -> bool {
     validator::check_magic_properties(&flat_grid, n)
@@ -114,6 +117,8 @@ mod tests {
         let result = generate_magic_square(3).expect("Should generate order 3");
         assert_eq!(result.n(), 3);
         assert_eq!(result.grid().len(), 9);
+        
+        #[cfg(not(target_arch = "wasm32"))]
         assert!(verify_magic_square(3, result.grid()));
     }
 
@@ -122,6 +127,8 @@ mod tests {
         let result = generate_magic_square(4).expect("Should generate order 4");
         assert_eq!(result.n(), 4);
         assert_eq!(result.grid().len(), 16);
+        
+        #[cfg(not(target_arch = "wasm32"))]
         assert!(verify_magic_square(4, result.grid()));
     }
 
@@ -130,6 +137,8 @@ mod tests {
         let result = generate_magic_square(6).expect("Should generate order 6");
         assert_eq!(result.n(), 6);
         assert_eq!(result.grid().len(), 36);
+        
+        #[cfg(not(target_arch = "wasm32"))]
         assert!(verify_magic_square(6, result.grid()));
     }
 

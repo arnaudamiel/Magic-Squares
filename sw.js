@@ -1,5 +1,5 @@
 // Service Worker for Magic Square Generator PWA
-const CACHE_NAME = 'magic-square-v1.05';
+const CACHE_NAME = 'magic-square-v1.06';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -44,39 +44,44 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
+    // We only want to call event.respondWith once
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
                 // Cache hit - return response from cache
                 if (response) {
-                    console.log('[Service Worker] Serving from cache:', event.request.url);
+                    // console.log('[Service Worker] Serving from cache:', event.request.url);
                     return response;
                 }
 
-                // Clone the request
-                const fetchRequest = event.request.clone();
+                // Make network request
+                return fetch(event.request)
+                    .then((networkResponse) => {
+                        // Check if valid response
+                        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+                            return networkResponse;
+                        }
 
-                // Make network request and cache the response
-                return fetch(fetchRequest).then((response) => {
-                    // Check if valid response
-                    if (!response || response.status !== 200 || response.type !== 'basic') {
-                        return response;
-                    }
+                        // Clone and cache
+                        const responseToCache = networkResponse.clone();
+                        caches.open(CACHE_NAME)
+                            .then((cache) => {
+                                cache.put(event.request, responseToCache);
+                            });
 
-                    // Clone the response
-                    const responseToCache = response.clone();
+                        return networkResponse;
+                    })
+                    .catch(() => {
+                        // Network failure (Offline)
+                        console.log('[Service Worker] Fetch failed; checking for offline fallback.');
 
-                    caches.open(CACHE_NAME)
-                        .then((cache) => {
-                            cache.put(event.request, responseToCache);
-                        });
+                        // For navigation requests (loading the page), return the app shell (index.html)
+                        if (event.request.mode === 'navigate') {
+                            return caches.match('./index.html');
+                        }
 
-                    return response;
-                });
-            })
-            .catch(() => {
-                // Offline fallback - you could return a custom offline page here
-                console.log('[Service Worker] Fetch failed; returning offline page instead.');
+                        // You could also return placeholder images etc. here
+                    });
             })
     );
 });

@@ -78,20 +78,6 @@ export function generate_magic_square(n) {
     }
 }
 
-/**
- * Verifies if a given grid is a valid magic square.
- * This function is exported to allow client-side verification if needed.
- * @param {number} n
- * @param {Uint32Array} flat_grid
- * @returns {boolean}
- */
-export function verify_magic_square(n, flat_grid) {
-    const ptr0 = passArray32ToWasm0(flat_grid, wasm.__wbindgen_export);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.verify_magic_square(n, ptr0, len0);
-    return ret !== 0;
-}
-
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,
@@ -145,14 +131,6 @@ function getStringFromWasm0(ptr, len) {
     return decodeText(ptr, len);
 }
 
-let cachedUint32ArrayMemory0 = null;
-function getUint32ArrayMemory0() {
-    if (cachedUint32ArrayMemory0 === null || cachedUint32ArrayMemory0.byteLength === 0) {
-        cachedUint32ArrayMemory0 = new Uint32Array(wasm.memory.buffer);
-    }
-    return cachedUint32ArrayMemory0;
-}
-
 let cachedUint8ArrayMemory0 = null;
 function getUint8ArrayMemory0() {
     if (cachedUint8ArrayMemory0 === null || cachedUint8ArrayMemory0.byteLength === 0) {
@@ -167,13 +145,6 @@ let heap = new Array(128).fill(undefined);
 heap.push(undefined, null, true, false);
 
 let heap_next = heap.length;
-
-function passArray32ToWasm0(arg, malloc) {
-    const ptr = malloc(arg.length * 4, 4) >>> 0;
-    getUint32ArrayMemory0().set(arg, ptr / 4);
-    WASM_VECTOR_LEN = arg.length;
-    return ptr;
-}
 
 function takeObject(idx) {
     const ret = getObject(idx);
@@ -195,14 +166,11 @@ function decodeText(ptr, len) {
     return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
 }
 
-let WASM_VECTOR_LEN = 0;
-
 let wasmModule, wasm;
 function __wbg_finalize_init(instance, module) {
     wasm = instance.exports;
     wasmModule = module;
     cachedDataViewMemory0 = null;
-    cachedUint32ArrayMemory0 = null;
     cachedUint8ArrayMemory0 = null;
     return wasm;
 }
