@@ -1,5 +1,5 @@
 // Service Worker for Magic Square Generator PWA
-const CACHE_NAME = 'magic-square-v1.06';
+const CACHE_NAME = 'magic-square-v1.07';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -58,7 +58,8 @@ self.addEventListener('fetch', (event) => {
                 return fetch(event.request)
                     .then((networkResponse) => {
                         // Check if valid response
-                        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+                        const cacheableTypes = ['basic', 'cors'];
+                        if (!networkResponse || networkResponse.status !== 200 || !cacheableTypes.includes(networkResponse.type)) {
                             return networkResponse;
                         }
 
